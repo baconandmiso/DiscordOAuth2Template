@@ -1,0 +1,23 @@
+﻿@page
+@using System.Security.Claims
+@using Discord
+@using Discord.Rest
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@{
+    if (!User.Identity!.IsAuthenticated)
+    {
+        <a href="/login">Login</a>
+    }
+    else
+    {
+        var client = new DiscordRestClient();
+        await client.LoginAsync(TokenType.Bearer, User.Claims.FirstOrDefault(x => x.Type == "urn:discord:access_token")?.Value);
+
+        var user = await client.GetCurrentUserAsync();
+        <p>Hello, @(user.GlobalName ?? user.Username)!</p>
+    }
+}
